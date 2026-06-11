@@ -1,4 +1,8 @@
 
+---
+config:
+  layout: elk
+---
 flowchart TD
     classDef data stroke:#2dd4bf,fill:#f0fdfa
     classDef process stroke:#a78bfa,fill:#f5f3ff

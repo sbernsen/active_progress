@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-slate-900 text-slate-100">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Adaptive Coach Profile Configurator</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* Custom Scrollbar for elegant preview */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #1e293b;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #475569;
+      border-radius: 3px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #10b981;
+    }
+
+    .step-active {
+      border-color: #10b981;
+      color: #10b981;
+    }
+  </style>
+</head>
+
+<body class="font-sans antialiased h-full flex flex-col">
+
+  <!-- Header -->
+  <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-50 px-6 py-4">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+      <div class="flex items-center gap-3">
+        <div
+          class="h-10 w-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+            stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
+        </div>
+        <div>
+          <h1 class="text-xl font-bold tracking-tight text-white flex items-center gap-2">
+            Adaptive Coach <span
+              class="text-xs bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded-full font-mono">Profile
+              Builder</span>
+          </h1>
+          <p class="text-xs text-slate-400">Generates validated YAML properties modeled directly from your database
+            configurations.</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <button id="clearBtn"
+          class="px-4 py-2 text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-all duration-150">
+          Clear Form
+        </button>
+        <button id="downloadBtn" disabled
+          class="px-5 py-2.5 text-sm font-semibold text-slate-900 bg-emerald-400 hover:bg-emerald-300 disabled:opacity-40 disabled:cursor-not-allowed rounded-lg shadow-lg shadow-emerald-500/10 transition-all duration-150 flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+            stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+          </svg>
+          Download .yaml File
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container Grid -->
+  <main class="flex-1 max-w-7xl w-full mx-auto grid grid-cols-1 lg:grid-cols-12 overflow-hidden h-full">
+
+    <!-- Left Hand Side: Wizard Form -->
+    <section class="lg:col-span-7 border-r border-slate-800 flex flex-col overflow-y-auto bg-slate-900/40">
+
+      <!-- Wizard Steps Navigation Header -->
+      <nav
+        class="sticky top-0 bg-slate-950/80 backdrop-blur border-b border-slate-800 p-4 grid grid-cols-4 gap-2 text-center text-xs font-semibold text-slate-400 z-10">
+        <button onclick="switchTab(1)" id="tabHead1"
+          class="py-2 px-1 border-b-2 border-transparent transition-all step-active hover:text-white">1.
+          Demographics</button>
+        <button onclick="switchTab(2)" id="tabHead2"
+          class="py-2 px-1 border-b-2 border-transparent transition-all hover:text-white">2. Athletic & Goals</button>
+        <button onclick="switchTab(3)" id="tabHead3"
+          class="py-2 px-1 border-b-2 border-transparent transition-all hover:text-white">3. Lifestyle & Sports</button>
+        <button onclick="switchTab(4)" id="tabHead4"
+          class="py-2 px-1 border-b-2 border-transparent transition-all hover:text-white">4. Equipment & Days</button>
+      </nav>
+
+      <form id="profileForm" class="p-8 space-y-8 flex-1" oninput="generateYAML()">
+
+        <!-- STEP 1: DEMOGRAPHICS & GEOGRAPHY -->
+        <div id="step1" class="space-y-6">
+          <div class="border-b border-slate-800 pb-4">
+            <h2 class="text-lg font-bold text-white">Demographics & Location</h2>
+            <p class="text-xs text-slate-400">Basic biological details to structure baseline metabolic recovery
+              equations.</p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Age (Years)</label>
+              <input type="number" id="age" value="32" min="1" max="120" required
+                class="w-full bg-slate-950 border border-slate-800 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 rounded-lg py-2.5 px-4 text-white placeholder-slate-600 transition-all font-mono">
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Biological Sex</label>
+              <select id="sex" required
+                class="w-full bg-slate-950 border border-slate-800 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 rounded-lg py-2.5 px-4 text-white transition-all">
+                <option value="Male" selected>Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other / Prefer not to say</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Current Weight
+                (lbs)</label>
+              <input type="number" id="current_weight_lbs" value="205.5" step="0.1" min="1" max="1000" required
+                class="w-full bg-slate-950 border border-slate-800 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 rounded-lg py-2.5 px-4 text-white placeholder-slate-600 transition-all font-mono">
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Geographic Location /
+                Zip Code</label>
+              <input type="text" id="location_or_zip" value="14802" placeholder="e.g. 14802 or London, UK" required
+                class="w-full bg-slate-950 border border-slate-800 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 rounded-lg py-2.5 px-4 text-white placeholder-slate-600 transition-all">
+              <span class="text-[10px] text-slate-500 mt-1 block">Allows calculation of altitude, local weather, and
+                facility access.</span>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Genetic/Fiber Profile
+                Predisposition</label>
+              <select id="genetic_background"
+                class="w-full bg-slate-950 border border-slate-800 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 rounded-lg py-2.5 px-4 text-white transition-all">
+                <option value="athletic_fast_twitch" selected>Athletic Fast-Twitch (Power & Explosion)</option>
+                <option value="endurance_slow_twitch">Endurance Slow-Twitch (Stamina & Duration)</option>
+                <option value="balanced">Balanced Hybrid (Multi-sport / Conditioning focus)</option>
+                <option value="hypo_responsive">Hypo-responsive (Slower recovery, high structural durability)</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Employment Status &
+                Career Burden</label>
+              <select id="employment_status"
+                class="w-full bg-slate-950 border border-slate-800 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 rounded-lg py-2.5 px-4 text-white transition-all">
+                <option value="full_time" selected>Full-Time Office (High cognitive stress, sedentary)</option>
+                <option value="part_time">Part-Time / Flexible hours</option>
+                <option value="physical_labor">Active Physical Laborer (High structural daily stress)</option>
+                <option value="unemployed_student">Student / Flexible schedule</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Education
+                Background</label>
+              <select id="education"
+                class="w-full bg-slate-950 border border-slate-800 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 rounded-lg py-2.5 px-4 text-white transition-all">
+                <option value="bachelors" selected>Bachelors Degree</option>
+                <option value="masters">Masters / Post-Graduate</option>
+                <option value="high_school">High School Diploma</option>
+                <option value="other">Other Academic / Vocational</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Marital & Home
+                Status</label>
+              <select id="marital_status"
+                class="w-full bg-slate-950 border border-slate-800 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 rounded-lg py-2.5 px-4 text-white transition-all">
+                <option value="married" selected>Married</option>
+                <option value="single">Single</option>
+                <option value="domestic_partnership">Domestic Partnership</option>
+                <option value="family_dependents">With Family / Dependents (Added scheduling variables)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="flex justify-end pt-4">
+            <button type="button" onclick="switchTab(2)"
+              class="px-5 py-2.5 text-sm font-semibold bg-slate-800 hover:bg-slate-700 text-white rounded-lg transition-all">
+              Next Section: Athletic & Goals →
+            </button>
+          </div>
+        </div>
+
+        <!-- STEP 2: ATHLETIC STATUS & TRAINING GOALS -->
+        <div id="step2" class="hidden space-y-6">
+          <div class="border-b border-slate-800 pb-4">
+            <h2 class="text-lg font-bold text-white">Athletic Status & Objectives</h2>
+            <p class="text-xs text-slate-400">Classify your baseline strength experience and structural targets.</p>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Level of Exercise
+              Expertise</label>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+              <label
+                class="relative border border-slate-800 bg-slate-950 p-4 rounded-xl flex flex-col justify-between cursor-pointer hover:border-emerald-500/50 transition-all">
+                <input type="radio" name="level_of_expertise" value="beginner"
+                  class="absolute right-3 top-3 accent-emerald-400">
+                <span class="text-sm font-bold text-white">Beginner</span>
+                <span class="text-[10px] text-slate-500 mt-2">Under 1 year of training. Basic technical mastery.</span>
+              </label>
+              <label
+                class="relative border border-emerald-500 bg-slate-950 p-4 rounded-xl flex flex-col justify-between cursor-pointer hover:border-emerald-500/50 transition-all">
+                <input type="radio" name="level_of_expertise" value="intermediate" checked
+                  class="absolute right-3 top-3 accent-emerald-400">
+                <span class="text-sm font-bold text-white">Intermediate</span>
+                <span class="text-[10px] text-slate-500 mt-2">1–3 years consistency. Progressive targets.</span>
+              </label>
+              <label
+                class="relative border border-slate-800 bg-slate-950 p-4 rounded-xl flex flex-col justify-between cursor-pointer hover:border-emerald-500/50 transition-all">
+                <input type="radio" name="level_of_expertise" value="advanced"
+                  class="absolute right-3 top-3 accent-emerald-400">
+                <span class="text-sm font-bold text-white">Advanced</span>
+                <span class="text-[10px] text-slate-500 mt-2">3–5+ years. Heavy compound familiarity.</span>
+              </label>
+              <label
+                class="relative border border-slate-800 bg-slate-950 p-4 rounded-xl flex flex-col justify-between cursor-pointer hover:border-emerald-500/50 transition-all">
+                <input type="radio" name="level_of_expertise" value="pro_athlete"
+                  class="absolute right-3 top-3 accent-emerald-400">
+                <span class="text-sm font-bold text-white">Pro Athlete</span>
+                <span class="text-[10px] text-slate-500 mt-2">Competes at professional or elite levels.</span>
+              </label>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Training Timeline
+              (Weeks)</label>
+            <input type="number" id="timeline_weeks" value="12" min="1" max="52" required
+              class="w-24 bg-slate-950 border border-slate-800 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 rounded-lg py-2.5 px-4 text-white font-mono">
+            <span class="text-xs text-slate-500 ml-3">Length of current program cycle/block. Default is 12 weeks.</span>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Primary Adaptive
+              Training Goals (Select All That Apply)</label>
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+              <label
+                class="flex items-center gap-3 p-3 bg-slate-950 border border-slate-800 rounded-lg cursor-pointer hover:border-slate-700">
+                <input type="checkbox" name="training_goals" value="power" checked
+                  class="accent-emerald-400 h-4 w-4 rounded">
+                <span class="text-sm text-slate-200">Power & Explosion</span>
+              </label>
+              <label
+                class="flex items-center gap-3 p-3 bg-slate-950 border border-slate-800 rounded-lg cursor-pointer hover:border-slate-700">
+                <input type="checkbox" name="training_goals" value="clean_mass"
+                  class="accent-emerald-400 h-4 w-4 rounded">
+                <span class="text-sm text-slate-200">Clean Muscle Mass</span>
+              </label>
+              <label
+                class="flex items-center gap-3 p-3 bg-slate-950 border border-slate-800 rounded-lg cursor-pointer hover:border-slate-700">
+                <input type="checkbox" name="training_goals" value="anaerobic_capacity" checked
+                  class="accent-emerald-400 h-4 w-4 rounded">
+                <span class="text-sm text-slate-200">Anaerobic Capacity</span>
+              </label>
+              <label
+                class="flex items-center gap-3 p-3 bg-slate-950 border border-slate-800 rounded-lg cursor-pointer hover:border-slate-700">
+                <input type="checkbox" name="training_goals" value="injury_prevention"
+                  class="accent-emerald-400 h-4 w-4 rounded">
+                <span class="text-sm text-slate-200">Joint Durability</span>
+              </label>
+              <label
+                class="flex items-center gap-3 p-3 bg-slate-950 border border-slate-800 rounded-lg cursor-pointer hover:border-slate-700">
+                <input type="checkbox" name="training_goals" value="body_fat_reduction"
+                  class="accent-emerald-400 h-4 w-4 rounded">
+                <span class="text-sm text-slate-200">Fat Loss & Conditioning</span>
+              </label>
+              <label
+                class="flex items-center gap-3 p-3 bg-slate-950 border border-slate-800 rounded-lg cursor-pointer hover:border-slate-700">
+                <input type="checkbox" name="training_goals" value="relative_strength"
+                  class="accent-emerald-400 h-4 w-4 rounded">
+                <span class="text-sm text-slate-200">Relative Bodyweight Power</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="flex justify-between pt-4">
+            <button type="button" onclick="switchTab(1)"
+              class="px-5 py-2.5 text-sm font-semibold bg-slate-800 hover:bg-slate-700 text-white rounded-lg transition-all">
+              ← Back
+            </button>
+            <button type="button" onclick="switchTab(3)"
+              class="px-5 py-2.5 text-sm font-semibold bg-slate-800 hover:bg-slate-700 text-white rounded-lg transition-all">
+              Next Section: Lifestyle & Sports →
+            </button>
+          </div>
+        </div>
+
+        <!-- STEP 3: LIFESTYLE, RECOVERY, & EXTERNAL SPORTS -->
+        <div id="step3" class="hidden space-y-6">
+          <div class="border-b border-slate-800 pb-4">
+            <h2 class="text-lg font-bold text-white">Diet, Lifestyle & Other Sports</h2>
+            <p class="text-xs text-slate-400">Map your biological ecosystem to manage daily baseline fatigue metrics.
+            </p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Nutritional
+                Summary</label>
+              <select id="diet_summary"
+                class="w-full bg-slate-950 border border-slate-800 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 rounded-lg py-2.5 px-4 text-white transition-all">
+                <option value="high_protein_deficit" selected>High Protein Deficit (Cut weight while preserving muscle)
+                </option>
+                <option value="caloric_surplus_mass">Caloric Surplus (Focus on mass and muscle acquisition)</option>
+                <option value="isocaloric_maintenance">Isocaloric Maintenance (Body recomp, consistent energy)</option>
+                <option value="keto_low_carb">Ketogenic / Lower-Carbohydrate Performance</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Job & Lifestyle
+                Physical Demands</label>
+              <select id="lifestyle_summary"
+                class="w-full bg-slate-950 border border-slate-800 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 rounded-lg py-2.5 px-4 text-white transition-all">
+                <option value="office_desk_job_high_stress" selected>Office Desk Job - High Stress (Sedentary but high
+                  cognitive load)</option>
+                <option value="on_feet_active">Lightly Active (Retail, light walking, teaching)</option>
+                <option value="heavy_physical_labor">Heavy Labor (Construction, tactical deployment)</option>
+                <option value="flexible_recovery">Retired / Unstressed Schedule (Focus on maximum recovery)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Allergies &
+                Intolerances (Non-technical, comma separated)</label>
+              <input type="text" id="allergies" value="peanuts, dairy" placeholder="e.g. peanuts, dairy, gluten"
+                class="w-full bg-slate-950 border border-slate-800 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 rounded-lg py-2.5 px-4 text-white placeholder-slate-600 transition-all">
+              <span class="text-[10px] text-slate-500 mt-1 block">Spaces will be automatically stripped, normalized, and
+                mapped as list arrays under the hood.</span>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Auxiliary Wearable
+                Tools</label>
+              <div class="grid grid-cols-2 gap-3">
+                <label
+                  class="flex items-center gap-3 p-2 bg-slate-950 border border-slate-800 rounded-lg cursor-pointer">
+                  <input type="checkbox" name="auxiliary_tools" value="apple_watch" checked
+                    class="accent-emerald-400 h-4 w-4">
+                  <span class="text-sm text-slate-300">Apple Watch</span>
+                </label>
+                <label
+                  class="flex items-center gap-3 p-2 bg-slate-950 border border-slate-800 rounded-lg cursor-pointer">
+                  <input type="checkbox" name="auxiliary_tools" value="whoop" checked
+                    class="accent-emerald-400 h-4 w-4">
+                  <span class="text-sm text-slate-300">Whoop</span>
+                </label>
+                <label
+                  class="flex items-center gap-3 p-2 bg-slate-950 border border-slate-800 rounded-lg cursor-pointer">
+                  <input type="checkbox" name="auxiliary_tools" value="oura" class="accent-emerald-400 h-4 w-4">
+                  <span class="text-sm text-slate-300">Oura Ring</span>
+                </label>
+                <label
+                  class="flex items-center gap-3 p-2 bg-slate-950 border border-slate-800 rounded-lg cursor-pointer">
+                  <input type="checkbox" name="auxiliary_tools" value="garmin" class="accent-emerald-400 h-4 w-4">
+                  <span class="text-sm text-slate-300">Garmin</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dynamic Other Sports Interface -->
+          <div class="border border-slate-800 bg-slate-950/60 p-6 rounded-2xl space-y-4">
+            <div class="flex justify-between items-center">
+              <div>
+                <h3 class="text-sm font-bold text-white uppercase tracking-wider">Other Sports Schedule</h3>
+                <p class="text-xs text-slate-400">Add other sporting events so the strength engine knows where to lower
+                  training volume.</p>
+              </div>
+              <button type="button" onclick="addSportRow()"
+                class="px-3 py-1.5 text-xs font-semibold bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 rounded-lg transition-all flex items-center gap-1">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24"
+                  stroke="currentColor" stroke-width="2.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                </svg>
+                Add Sport
+              </button>
+            </div>
+
+            <!-- Sports Container -->
+            <div id="sportsContainer" class="space-y-3">
+              <!-- Initial Row -->
+              <div
+                class="sport-row grid grid-cols-1 md:grid-cols-3 gap-3 items-center border border-slate-900 bg-slate-950 p-3 rounded-lg">
+                <input type="text" placeholder="Sport name (e.g. Badminton)" value="badminton"
+                  class="sport-name w-full bg-slate-900 border border-slate-800 focus:border-emerald-500 rounded-lg py-1.5 px-3 text-white text-sm">
+                <select
+                  class="sport-freq w-full bg-slate-900 border border-slate-800 focus:border-emerald-500 rounded-lg py-1.5 px-3 text-white text-sm">
+                  <option value="weekly" selected>Weekly</option>
+                  <option value="biweekly">Bi-Weekly</option>
+                  <option value="monthly">Monthly</option>
+                  <option value="seasonal">Seasonal</option>
+                </select>
+                <div class="flex gap-2">
+                  <input type="text" placeholder="Schedule (e.g. Mondays)" value="mondays"
+                    class="sport-sched w-full bg-slate-900 border border-slate-800 focus:border-emerald-500 rounded-lg py-1.5 px-3 text-white text-sm">
+                  <button type="button" onclick="removeSportRow(this)"
+                    class="p-1.5 text-slate-500 hover:text-red-400 hover:bg-slate-850 rounded transition-all">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                      stroke="currentColor" stroke-width="2">
+                      <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex justify-between pt-4">
+            <button type="button" onclick="switchTab(2)"
+              class="px-5 py-2.5 text-sm font-semibold bg-slate-800 hover:bg-slate-700 text-white rounded-lg transition-all">
+              ← Back
+            </button>
+            <button type="button" onclick="switchTab(4)"
+              class="px-5 py-2.5 text-sm font-semibold bg-slate-800 hover:bg-slate-700 text-white rounded-lg transition-all">
+              Next Section: Facilities & Days →
+            </button>
+          </div>
+        </div>
+
+        <!-- STEP 4: AVAILABILITY & EQUIPMENT -->
+        <div id="step4" class="hidden space-y-6">
+          <div class="border-b border-slate-800 pb-4">
+            <h2 class="text-lg font-bold text-white">Availability & Facility Mappings</h2>
+            <p class="text-xs text-slate-400">Tell the engine how many days you can train, and filter the exercise
+              selection based on equipment access.</p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Weekly Workout Target
+                Days</label>
+              <select id="weekly_workout_days"
+                class="w-full bg-slate-950 border border-slate-800 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 rounded-lg py-2.5 px-4 text-white transition-all">
+                <option value="3" selected>3 Days / Week (Athletic Full Body Split)</option>
+                <option value="4">4 Days / Week (Upper / Lower Split)</option>
+                <option value="2">2 Days / Week (Maintenance Block)</option>
+                <option value="5">5 Days / Week (High Frequency Athletic Conditioning)</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Maximum Workout Time
+                Window (Mins)</label>
+              <select id="session_time_window_mins"
+                class="w-full bg-slate-950 border border-slate-800 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 rounded-lg py-2.5 px-4 text-white transition-all font-mono">
+                <option value="45" selected>45 Minutes (Dense strength complexes, limited accessories)</option>
+                <option value="30">30 Minutes (High-density circuit EDT format)</option>
+                <option value="60">60 Minutes (Full-duration athletic prep block with foam rolling)</option>
+                <option value="90">90 Minutes (Maximum structural volume + extensive mobility)</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Physical Facility &
+              Equipment Access (Select All That Apply)</label>
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+              <label
+                class="flex items-center gap-3 p-3 bg-slate-950 border border-slate-800 rounded-lg cursor-pointer hover:border-slate-700">
+                <input type="checkbox" name="equipment_access" value="full_gym" checked
+                  class="accent-emerald-400 h-4 w-4 rounded">
+                <span class="text-sm text-slate-200">Full Commercial Gym</span>
+              </label>
+              <label
+                class="flex items-center gap-3 p-3 bg-slate-950 border border-slate-800 rounded-lg cursor-pointer hover:border-slate-700">
+                <input type="checkbox" name="equipment_access" value="track" checked
+                  class="accent-emerald-400 h-4 w-4 rounded">
+                <span class="text-sm text-slate-200">Athletic Running Track</span>
+              </label>
+              <label
+                class="flex items-center gap-3 p-3 bg-slate-950 border border-slate-800 rounded-lg cursor-pointer hover:border-slate-700">
+                <input type="checkbox" name="equipment_access" value="pool" class="accent-emerald-400 h-4 w-4 rounded">
+                <span class="text-sm text-slate-200">Swimming Pool</span>
+              </label>
+              <label
+                class="flex items-center gap-3 p-3 bg-slate-950 border border-slate-800 rounded-lg cursor-pointer hover:border-slate-700">
+                <input type="checkbox" name="equipment_access" value="dumbbells_only"
+                  class="accent-emerald-400 h-4 w-4 rounded">
+                <span class="text-sm text-slate-200">Dumbbells Only</span>
+              </label>
+              <label
+                class="flex items-center gap-3 p-3 bg-slate-950 border border-slate-800 rounded-lg cursor-pointer hover:border-slate-700">
+                <input type="checkbox" name="equipment_access" value="bodyweight"
+                  class="accent-emerald-400 h-4 w-4 rounded">
+                <span class="text-sm text-slate-200">Bodyweight / Calisthenics Only</span>
+              </label>
+              <label
+                class="flex items-center gap-3 p-3 bg-slate-950 border border-slate-800 rounded-lg cursor-pointer hover:border-slate-700">
+                <input type="checkbox" name="equipment_access" value="kettlebells"
+                  class="accent-emerald-400 h-4 w-4 rounded">
+                <span class="text-sm text-slate-200">Kettlebells Available</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Notification Toast inline for saving validation -->
+          <div id="validationWarning"
+            class="p-4 bg-red-500/10 border border-red-500/20 text-red-400 text-xs rounded-xl hidden flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+              stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+            <span>Please make sure all required fields in the previous tabs are completed to finalize the YAML.</span>
+          </div>
+
+          <div class="flex justify-between pt-4">
+            <button type="button" onclick="switchTab(3)"
+              class="px-5 py-2.5 text-sm font-semibold bg-slate-800 hover:bg-slate-700 text-white rounded-lg transition-all">
+              ← Back
+            </button>
+            <div class="text-emerald-400 font-semibold text-xs flex items-center gap-1.5 animate-pulse">
+              <span class="h-2 w-2 rounded-full bg-emerald-400"></span> Live YAML Generating...
+            </div>
+          </div>
+        </div>
+
+      </form>
+    </section>
+
+    <!-- Right Hand Side: Beautiful YAML Code Preview -->
+    <section class="lg:col-span-5 bg-slate-950 p-6 flex flex-col justify-between overflow-hidden">
+
+      <!-- Preview Header -->
+      <div class="flex justify-between items-center border-b border-slate-800 pb-4 mb-4">
+        <div class="flex items-center gap-2">
+          <div class="h-2 w-2 rounded-full bg-emerald-400"></div>
+          <span class="text-xs font-bold uppercase tracking-wider text-slate-400">user_profile.yaml Preview</span>
+        </div>
+        <button id="copyBtn"
+          class="px-3 py-1.5 text-xs bg-slate-800 hover:bg-slate-700 text-white rounded-lg transition-all flex items-center gap-1">
+          <svg id="copyIcon" xmlns="http://www.w3.org/2000/svg" class="h-4.5 w-4.5" fill="none" viewBox="0 0 24 24"
+            stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+          </svg>
+          <span id="copyText">Copy YAML</span>
+        </button>
+      </div>
+
+      <!-- Live Code Workspace -->
+      <div
+        class="flex-1 overflow-y-auto bg-slate-900/50 rounded-xl border border-slate-800 p-4 font-mono text-xs text-emerald-300 leading-relaxed relative">
+        <pre id="yamlOutput" class="whitespace-pre-wrap select-all">Generative output loader...</pre>
+      </div>
+
+      <!-- Quick Setup Instructions -->
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 mt-4">
+        <h3 class="text-xs font-bold text-white uppercase tracking-wider mb-1">How to Integrate</h3>
+        <p class="text-[11px] text-slate-400">Copy this generated config and save it as <code
+            class="bg-slate-950 text-emerald-400 px-1 py-0.5 rounded font-mono font-bold">user_profile.yaml</code> in
+          your local Python directory to feed into Ollama.</p>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- Script logic handles non-technical formatting -->
+  <script>
+    // State tab controller
+    function switchTab(stepNum) {
+      for (let i = 1; i <= 4; i++) {
+        const step = document.getElementById(`step${i}`);
+        const tabHead = document.getElementById(`tabHead${i}`);
+        if (i === stepNum) {
+          step.classList.remove('hidden');
+          tabHead.classList.add('step-active');
+        } else {
+          step.classList.add('hidden');
+          tabHead.classList.remove('step-active');
+        }
+      }
+    }
+
+    // Dynamic Row Actions for other sports
+    function addSportRow() {
+      const container = document.getElementById('sportsContainer');
+      const div = document.createElement('div');
+      div.className = "sport-row grid grid-cols-1 md:grid-cols-3 gap-3 items-center border border-slate-900 bg-slate-950 p-3 rounded-lg";
+      div.innerHTML = `
+        <input type="text" placeholder="Sport name (e.g. Mountain Biking)" class="sport-name w-full bg-slate-900 border border-slate-800 focus:border-emerald-500 rounded-lg py-1.5 px-3 text-white text-sm">
+        <select class="sport-freq w-full bg-slate-900 border border-slate-800 focus:border-emerald-500 rounded-lg py-1.5 px-3 text-white text-sm">
+          <option value="weekly">Weekly</option>
+          <option value="biweekly">Bi-Weekly</option>
+          <option value="monthly" selected>Monthly</option>
+          <option value="seasonal">Seasonal</option>
+        </select>
+        <div class="flex gap-2">
+          <input type="text" placeholder="Schedule (e.g. Weekends)" class="sport-sched w-full bg-slate-900 border border-slate-800 focus:border-emerald-500 rounded-lg py-1.5 px-3 text-white text-sm">
+          <button type="button" onclick="removeSportRow(this)" class="p-1.5 text-slate-500 hover:text-red-400 hover:bg-slate-850 rounded transition-all">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
+          </button>
+        </div>
+      `;
+      container.appendChild(div);
+      generateYAML();
+    }
+
+    function removeSportRow(btn) {
+      const row = btn.closest('.sport-row');
+      row.remove();
+      generateYAML();
+    }
+
+    // Helper formatting function to clean user input string spaces to underscore
+    function formatToCleanKey(val) {
+      if (!val) return '';
+      return val
+        .toString()
+        .toLowerCase()
+        .trim()
+        .replace(/\s+/g, '_')   // Replace all spaces with underscores
+        .replace(/[^\w]/g, ''); // Strip special characters
+    }
+
+    // Helper formatting function to clean comma lists to formatted yaml arrays
+    function cleanCommaListToYamlArray(val) {
+      if (!val) return '[]';
+      const cleanItems = val.split(',')
+        .map(item => item.trim().toLowerCase().replace(/\s+/g, '_'))
+        .filter(item => item !== '');
+
+      if (cleanItems.length === 0) return '[]';
+      return `[\n` + cleanItems.map(item => `      "${item}"`).join(',\n') + `\n    ]`;
+    }
+
+    // Live Builder Logic
+    function generateYAML() {
+      const form = document.getElementById('profileForm');
+      const downloadBtn = document.getElementById('downloadBtn');
+      const validationWarning = document.getElementById('validationWarning');
+
+      // Basic check
+      const isValid = form.checkValidity();
+      if (isValid) {
+        downloadBtn.removeAttribute('disabled');
+        validationWarning.classList.add('hidden');
+      } else {
+        downloadBtn.setAttribute('disabled', 'true');
+        validationWarning.classList.remove('hidden');
+      }
+
+      // Read form fields
+      const age = document.getElementById('age').value || 32;
+      const sex = document.getElementById('sex').value.toLowerCase();
+      const weight = document.getElementById('current_weight_lbs').value || 205.5;
+      const geo = document.getElementById('location_or_zip').value || "14802";
+      const genetic = document.getElementById('genetic_background').value;
+      const employment = document.getElementById('employment_status').value;
+      const education = document.getElementById('education').value;
+      const marital = document.getElementById('marital_status').value;
+      const expertise = document.querySelector('input[name="level_of_expertise"]:checked')?.value || "intermediate";
+      const timeline = document.getElementById('timeline_weeks').value || 12;
+      const diet = document.getElementById('diet_summary').value;
+      const lifestyle = document.getElementById('lifestyle_summary').value;
+
+      // Format allergies dynamically
+      const allergiesValue = document.getElementById('allergies').value;
+      const allergiesYaml = cleanCommaListToYamlArray(allergiesValue);
+
+      // Collect checklists
+      const goalsChecked = Array.from(document.querySelectorAll('input[name="training_goals"]:checked')).map(el => `"${el.value}"`);
+      const goalsYaml = goalsChecked.length ? `[\n` + goalsChecked.map(g => `      ${g}`).join(',\n') + `\n    ]` : "[]";
+
+      const toolsChecked = Array.from(document.querySelectorAll('input[name="auxiliary_tools"]:checked')).map(el => `"${el.value}"`);
+      const toolsYaml = toolsChecked.length ? `[\n` + toolsChecked.map(t => `      ${t}`).join(',\n') + `\n    ]` : "[]";
+
+      const equipChecked = Array.from(document.querySelectorAll('input[name="equipment_access"]:checked')).map(el => `"${el.value}"`);
+      const equipYaml = equipChecked.length ? `[\n` + equipChecked.map(e => `      ${e}`).join(',\n') + `\n    ]` : "[]";
+
+      const frequency = document.getElementById('weekly_workout_days').value || 3;
+      const duration = document.getElementById('session_time_window_mins').value || 45;
+
+      // Format sports list dynamically
+      const sportRows = document.querySelectorAll('.sport-row');
+      let sportsYamlList = "other_sports: []";
+      if (sportRows.length > 0) {
+        let sportsTemp = "other_sports:";
+        let hasContent = false;
+        sportRows.forEach(row => {
+          const name = row.querySelector('.sport-name').value.trim();
+          const freq = row.querySelector('.sport-freq').value;
+          const sched = row.querySelector('.sport-sched').value.trim();
+
+          if (name !== '') {
+            hasContent = true;
+            sportsTemp += `\n      - sport: "${name.toLowerCase()}"\n        frequency: "${freq}"\n        schedule: "${sched.toLowerCase()}"`;
+          }
+        });
+        if (hasContent) {
+          sportsYamlList = sportsTemp;
+        }
+      }
+
+      // Construct actual beautiful YAML string matching schema
+      const yaml = `user_profile:
+  demographic_metrics:
+    age: ${age}
+    sex: "${sex}"
+    current_weight_lbs: ${weight}
+    genetic_background: "${genetic}"
+    education: "${education}"
+    marital_status: "${marital}"
+    employment_status: "${employment}"
+  geographic_profile:
+    location_or_zip: "${geo}"
+  athletic_classification:
+    level_of_expertise: "${expertise}"
+    training_goals: ${goalsYaml}
+    timeline_weeks: ${timeline}
+  diet_and_lifestyle:
+    diet_summary: "${diet}"
+    allergies: ${allergiesYaml}
+    lifestyle_summary: "${lifestyle}"
+    auxiliary_tools: ${toolsYaml}
+    ${sportsYamlList}
+  availability_and_facilities:
+    weekly_workout_days: ${frequency}
+    session_time_window_mins: ${duration}
+    equipment_access: ${equipYaml}`;
+
+      document.getElementById('yamlOutput').textContent = yaml;
+    }
+
+    // Clipboard Copy Handler
+    document.getElementById('copyBtn').addEventListener('click', function () {
+      const outputText = document.getElementById('yamlOutput').textContent;
+
+      // Robust standard copy for iframes
+      const tempTextArea = document.createElement('textarea');
+      tempTextArea.value = outputText;
+      document.body.appendChild(tempTextArea);
+      tempTextArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(tempTextArea);
+
+      // UI Update Toast
+      const copyText = document.getElementById('copyText');
+      const copyIcon = document.getElementById('copyIcon');
+      copyText.textContent = "Copied!";
+      copyText.classList.add('text-emerald-400');
+
+      setTimeout(() => {
+        copyText.textContent = "Copy YAML";
+        copyText.classList.remove('text-emerald-400');
+      }, 2000);
+    });
+
+    // File Downloader Handler
+    document.getElementById('downloadBtn').addEventListener('click', function () {
+      const outputText = document.getElementById('yamlOutput').textContent;
+      const blob = new Blob([outputText], { type: 'text/yaml' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'user_profile.yaml';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    });
+
+    // Clear Form logic
+    document.getElementById('clearBtn').addEventListener('click', function () {
+      document.getElementById('profileForm').reset();
+
+      // Clean sports list container except the template default
+      const container = document.getElementById('sportsContainer');
+      container.innerHTML = `
+        <div class="sport-row grid grid-cols-1 md:grid-cols-3 gap-3 items-center border border-slate-900 bg-slate-950 p-3 rounded-lg">
+          <input type="text" placeholder="Sport name (e.g. Badminton)" value="" class="sport-name w-full bg-slate-900 border border-slate-800 focus:border-emerald-500 rounded-lg py-1.5 px-3 text-white text-sm">
+          <select class="sport-freq w-full bg-slate-900 border border-slate-800 focus:border-emerald-500 rounded-lg py-1.5 px-3 text-white text-sm">
+            <option value="weekly" selected>Weekly</option>
+            <option value="biweekly">Bi-Weekly</option>
+            <option value="monthly">Monthly</option>
+            <option value="seasonal">Seasonal</option>
+          </select>
+          <div class="flex gap-2">
+            <input type="text" placeholder="Schedule (e.g. Mondays)" value="" class="sport-sched w-full bg-slate-900 border border-slate-800 focus:border-emerald-500 rounded-lg py-1.5 px-3 text-white text-sm">
+            <button type="button" onclick="removeSportRow(this)" class="p-1.5 text-slate-500 hover:text-red-400 hover:bg-slate-850 rounded transition-all">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      `;
+      generateYAML();
+      switchTab(1);
+    });
+
+    // Start generator on load
+    window.onload = function () {
+      generateYAML();
+    };
+  </script>
+</body>
+
+</html>

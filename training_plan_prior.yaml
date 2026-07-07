@@ -1,3 +1,5 @@
+Dynamic AI Coach Configuration File
+
 metadata:
 app_name: "Adaptive Athletic Coach"
 target_audience: "Functional athletes, rugby players, tactical populations"
@@ -38,6 +40,7 @@ diet_summary: "string"
 allergies: "list of strings"
 lifestyle_summary: "string (e.g., job physical stress, travel, daily active recovery habits)"
 auxiliary_tools: "list of strings (e.g., Apple Watch, Whoop, Oura, Garmin)"
+other_sports: "list of objects (e.g., [{'sport': 'string', 'frequency': 'string', 'schedule': 'string'}])"
 availability_and_facilities:
 weekly_workout_days: "integer (determines frequency and split structure)"
 session_time_window_mins: "integer (determines exercise density, circuit layouts, and rest parameters)"
